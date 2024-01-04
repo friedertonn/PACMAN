@@ -1,6 +1,6 @@
 # PACMAN für den AC1
-Das PACMAN-Spiel wurde von Dave Nixon im Juli 1981 in der Sprache C
-geschrieben. Im Jahr 1982 ist es von Jeff Martin auf den BDS C-Compiler
+Das PACMAN-Spiel wurde von Dave Nixon im Juli 1981 in C geschrieben.
+Im Jahr 1982 ist es von Jeff Martin auf den BDS C-Compiler
 portiert worden.
 Da die Terminalausgabe zeitkritisch ist, wurden die C-internen E/A-Funktionen
 nicht verwendet. Stattdessen erfolgt die Zeichenausgabe direkt auf die
