@@ -1,16 +1,16 @@
 # PACMAN für den AC1
 Das PACMAN-Spiel wurde von Dave Nixon im Juli 1981 in der Sprache C
-geschrieben. Im Februar 1982 ist es von Jeff Martin auf den BDS 
-C-Compiler portiert worden.
+geschrieben. Im Jahr 1982 ist es von Jeff Martin auf den BDS C-Compiler
+portiert worden.
 Da die Terminalausgabe zeitkritisch ist, wurden die C-internen E/A-Funktionen
 nicht verwendet. Stattdessen erfolgt die Zeichenausgabe direkt auf die
 (damals verwendete) serielle Schnittstelle.
 
 Das hier vorliegende PACMAN-Spiel basiert auf diesem Quellcode und wurde
-an den AC1-2010 mit einem 64x32-Bildschirm angepasst.
+an den AC1 mit einem 64x32-Bildschirm angepasst.
 Es benötigt ein lauffähiges CP/M-System, welches eine Escape-Sequenz zur
 Kursorpositionierung sowie die Kommandos Kursor_ON und Kursor_OFF unterstützt
-(z.B. HRCPM12).
+(z. B. HRCPM12).
 Das CP/M-System sollte mit Tastatur-Pufferspeicher und Interrupt arbeiten,
 damit das Zusammenspiel zwischen den BIOS-Aufrufen CONST (console status)
 und CONIN (console input) optimal funktioniert.

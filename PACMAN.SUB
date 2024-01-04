@@ -1,0 +1,5 @@
+CC PACMAN.C
+CC PACMONST.C
+CC PACUTIL.C
+CLINK PACMAN PACMONST PACUTIL DEFF
+
