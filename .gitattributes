@@ -1,0 +1,4 @@
+*.C text eol=crlf
+*.H text eol=crlf
+*.COM binary
+*.SUB text eol=crlf
