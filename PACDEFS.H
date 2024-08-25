@@ -7,6 +7,10 @@
 #define GAME2	'2'
 #define GAME3	'3'
 #define GAME4	'4'
+#define GAME5	'5'
+#define GAME6	'6'
+#define GAME7	'7'
+#define GAME8	'8'
 #define MGTYPE	4	    /* maximum game types */
 #define	MAXPAC	3	    /* maximum number of pacmen to start */
 #define	MAXMONSTER	4	/* max number of monsters */
@@ -25,7 +29,6 @@
 #define ABORT	'\3'
 #define QUIT	'Q'
 #define QUIT2	'q'
-#define CNTLS	'\23'
 #define BUF_SIZE 32
 #define	TRUE    1
 #define	FALSE   0
@@ -76,6 +79,16 @@
 #define PLEFT	'<'
 #define PRIGHT	'>'
 
+#define col_gray    71
+#define col_black   72
+#define col_red     73
+#define col_green   74
+#define col_yellow  75
+#define col_blue    76
+#define col_magenta 77
+#define col_cyan    78
+#define col_white   79
+
 struct	pactyp
 {
 	int	xpos;	/* horizontal position */
@@ -84,6 +97,7 @@ struct	pactyp
 	int	speed;	/* FAST/SLOW	       */
 	int	danger;	/* TRUE if can eat     */
 	int	stat;	/* status		*/
+	int	col;	/* color		*/
 };
 
 int	rscore[MAXMONSTER];
@@ -131,8 +145,8 @@ char display[BRDY][BRDX];
 
 char message[81];	/* temporary message buffer */
 
-int	game, killcnt;
+int	game, killcnt, colorbws;
 
 unsigned pscore;
 
-
+

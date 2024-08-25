@@ -71,7 +71,7 @@ int mnum;
 		mptr->ypos = MSTARTY;
 		mptr->xpos = MSTARTX + (2 * mnum);
 		mptr->stat = START;
-		PLOT(mptr->ypos, mptr->xpos, MONSTER);
+		colorPLOT(mptr->ypos, mptr->xpos, MONSTER, mptr->col);
 		pscore += KILLSCORE;
 		return(GOTONE);
 	};
@@ -93,28 +93,36 @@ instruct()
 {
 	clr();
 	POS(-4, -4);
-	printf("\r\n\n           P A C M A N  fuer den AC1 (64x32-Terminal)\r\n\n\n");
+	printf("\r\n\n           P A C M A N  fuer den AC1 (64x32-Terminal)");
+	/* colorPLOT(-2, 7, 80, col_cyan);
+	colorPLOT(-2, 9, 65, col_green);
+	colorPLOT(-2, 11, 67, col_yellow);
+	colorPLOT(-2, 13, 77, col_red);
+	colorPLOT(-2, 15, 65, col_gray);
+	colorPLOT(-2, 17, 78, col_magenta); */
+	printf("\r\n\n\n");
 	printf("  Achtung: Du befindest dich in einem Verlies\r\n");
 	printf("           und wirst von Monstern gejagt!\r\n\n");
-	printf("  Im Kerker liegen Goldstuecke verstreut und mit \".\" markiert.\r\n");
-	printf("  An den mit \"%%\" gekennzeichneten Stellen ist ein Zaubertrank\r\n");
+	printf("  Im Kerker liegen Goldstuecke verstreut und mit \'.\' markiert.\r\n");
+	printf("  An den mit \'%%\' gekennzeichneten Stellen ist ein Zaubertrank\r\n");
 	printf("  erhaeltlich. Mit jedem Trank kannst du fuer eine begrenzte\r\n");
 	printf("  Zeit Monster durch Beruehrung toeten. Er wird sie auch ab-\r\n");
 	printf("  schrecken. Wenn du ein Monster toetest, wird es regeneriert,\r\n");
 	printf("  aber das braucht Zeit.\r\n");
 	printf("  Das Toeten aller Monster fuehrt dazu, dass irgendwo im\r\n");
 	printf("  Kerker auf magische Weise ein weiterer Schatz erscheint, der\r\n");
-	printf("  mit einem \"$\" markiert ist.\r\n");
+	printf("  mit einem \'$\' markiert ist.\r\n");
 	printf("  Es gibt einen magischen Tunnel, der den mittleren linken\r\n");
 	printf("  und den mittleren rechten Teil des Kerkers verbindet.\r\n");
 	printf("  Die Monster wissen davon! Du hast %d Leben.\r\n\n", MAXPAC);
 	printf("  Du kannst Dich mit den Pfeiltasten bewegen.\r\n\n");
 	printf("  Leertaste:     Spiel anhalten\r\n");
 	printf("  Q oder Ctrl-C: Spiel beenden\r\n\n");
-	printf("  Start: 1  -->  normales Spiel\r\n");
-	printf("         2  -->  blinkende Monster\r\n");
-	printf("         3  -->  intelligente Monster\r\n");
-	printf("         4  -->  blinkende intelligente Monster\r\n");
+	printf("         color-BWS  b/w-BWS\r\n");
+	printf("  Start:     1         5    --> normales Spiel\r\n");
+	printf("             2         6    --> blinkende Monster\r\n");
+	printf("             3         7    --> intelligente Monster\r\n");
+	printf("             4         8    --> blinkende intelligente Monster\r\n");
 }
 
 /*
@@ -137,6 +145,13 @@ over()
 		printf("|                           |");
 		POS(line++, 14);
 		printf("| G A M E   O V E R         |");
+		if (colorbws == 1)
+		{
+			colorPLOT(10, 26, 79, col_cyan);
+			colorPLOT(10, 28, 86, col_green);
+			colorPLOT(10, 30, 69, col_yellow);
+			colorPLOT(10, 32, 82, col_red);
+		}
 		POS(line++, 14);
 		printf("|                           |");
 		POS(line++, 14);
@@ -268,10 +283,9 @@ init()
  */
 poll(sltime)
 {
-	int stop;
 	int command;
 
-	if(bios(2) == 0) return;  /* CONST */
+	if (bios(2) == 0) return;  /* CONST */
 
 	readin:
 	command = bios(3);  /* CONIN */
@@ -309,24 +323,44 @@ poll(sltime)
 		over();
 		break;
 
-	case CNTLS:
-		stop = 1;
-		goto readin;
-
 	case GAME1:
-		game = 1;
+		game = 1; 
+		colorbws = 1;
 		break;
 
 	case GAME2:
 		game = 2;
+		colorbws = 1;
 		break;
 
 	case GAME3:
 		game = 3;
+		colorbws = 1;
 		break;
 
 	case GAME4:
 		game = 4;
+		colorbws = 1;
+		break;
+
+	case GAME5:
+		game = 1;
+		colorbws = 0;
+		break;
+
+	case GAME6:
+		game = 2;
+		colorbws = 0;
+		break;
+
+	case GAME7:
+		game = 3;
+		colorbws = 0;
+		break;
+
+	case GAME8:
+		game = 4;
+		colorbws = 0;
 		break;
 
 	default:
@@ -355,6 +389,29 @@ char ch;
 	if ((ch >= 32) && (ch < 128)) bios(4, ch);  /* CONOUT */
 }
 
+colorPLOT(row, col, ch, color)
+int row, col;
+char ch, color;
+{
+	POS(row, col);
+	if (colorbws == 1)
+	{
+		bios(4, ESC);
+		bios(4, 93);
+		bios(4, color);
+		if (color >= 72) bios(4, 134);  /* intensiv */
+		else bios(4, 132);  /* nicht intensiv */
+	}
+	if ((ch >= 32) && (ch < 128)) bios(4, ch);  /* CONOUT */
+	if (colorbws == 1)
+	{
+		bios(4, ESC);
+		bios(4, 93);
+		bios(4, col_white);
+		bios(4, 134);  /* intensiv */
+	}
+}
+
 /*
  * The SPLOT function is normally defined as:
  * #define SPLOT(A,B,S) POS(A,B);printf("%s",s)
@@ -381,4 +438,4 @@ int row, col;
 	bios(4, 4 + col);
 }
 
-
+

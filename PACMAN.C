@@ -16,6 +16,7 @@
  * define the cursor-addressing sequence.
  *
  * Angepasst fuer das AC1-CP/M mit 64x32-Terminal im Januar 2024
+ * Angepasst fuer AC1-2010 Color-BWS im August 2024
  *
  * To compile:
  *		CC PACMAN.C
@@ -31,11 +32,12 @@
 
 main()
 {
-	register int tmp;		/* temp variables */
+	register int tmp;       /* temp variables */
 	register int pac_cnt;
-	register int monstcnt;	/* monster number */
+	register int monstcnt;  /* monster number */
 	struct pactyp *mptr;
 
+	bios(4, 134);  /* CONOUT 0x86 --> intensiv */
 	init();  /* global init */
 	for (pac_cnt = MAXPAC; pac_cnt > 0; pac_cnt--)
 	{
@@ -62,31 +64,40 @@ main()
 		{
 			SPLOT(tmp, 0, &(display[tmp][0]));
 		};
+
 		/* initialize a pacman */
 		pac.xpos = PSTARTX;
 		pac.ypos = PSTARTY;
 		pac.dirn = DNULL;
 		pac.speed = SLOW;
 		pac.danger = FALSE;
-		PLOT(pacptr->ypos, pacptr->xpos, pacsymb);
+		pac.col = col_yellow;
+		colorPLOT(pacptr->ypos, pacptr->xpos, pacsymb, pacptr->col);
+
 		/* display remaining pacmen */
+		SPLOT(24, 0, "verbleibende Leben:");
 		for (tmp = 0; tmp < pac_cnt - 1; tmp++)
 		{
-			PLOT(23, (MAXPAC * tmp), PACMAN);
+			colorPLOT(24, ((tmp * 2) + 20), PACMAN, pacptr->col);
 		};
 
 		/*
 		 * Init. monsters
 		 */
-		for (mptr = &monst[0], monstcnt = 0; monstcnt < MAXMONSTER; mptr++, monstcnt++)
+		for (monstcnt = 0; monstcnt < MAXMONSTER; monstcnt++)
 		{
+			mptr = (&monst[monstcnt]);
 			mptr->xpos = MSTARTX + (2 * monstcnt);
 			mptr->ypos = MSTARTY;
 			mptr->speed = SLOW;
 			mptr->dirn = DNULL;
 			mptr->danger = FALSE;
 			mptr->stat = START;
-			PLOT(mptr->ypos, mptr->xpos, MONSTER);
+			if (monstcnt == 0) mptr->col = col_magenta;
+			else if (monstcnt == 1) mptr->col = col_red;
+			else if (monstcnt == 2) mptr->col = col_green;
+			else mptr->col = col_cyan;
+			colorPLOT(mptr->ypos, mptr->xpos, MONSTER, mptr->col);
 		};
 		rounds = 0;	/* timing mechanism */
 
@@ -158,7 +169,7 @@ main()
 pacman()
 {
 	register int sqtype;
-	register int mcnt;
+	register int monstcnt;
 	register int tmpx, tmpy;
 	int deltat;
 	struct pactyp *mptr;
@@ -299,27 +310,26 @@ pacman()
 		pacptr->danger = TRUE;
 
 		/* slow down monsters and make them harmless */
-		mptr = &monst[0];
-		for (mcnt = 0; mcnt < MAXMONSTER; mcnt++)
+		for (monstcnt = 0; monstcnt < MAXMONSTER; monstcnt++)
 		{
+			mptr = (&monst[monstcnt]);
 			if (mptr->stat == RUN)
 			{
 				mptr->speed = SLOW;
 				mptr->danger = FALSE;
 			};
-			mptr++;
 		};
 		break;
 	};
 
 	/* did the pacman run into a monster? */
-	for (mptr = &monst[0], mcnt = 0; mcnt < MAXMONSTER; mptr++, mcnt++)
+	for (monstcnt = 0; monstcnt < MAXMONSTER; monstcnt++)
 	{
+		mptr = (&monst[monstcnt]);
 		if ((mptr->xpos == pacptr->xpos) &&
 			(mptr->ypos == pacptr->ypos))
 		{
-
-			killflg = dokill(mcnt);
+			killflg = dokill(monstcnt);
 		}
 		else
 		{
@@ -328,8 +338,8 @@ pacman()
 	};
 	if (killflg != TURKEY)
 	{
-		PLOT(pacptr->ypos, pacptr->xpos, pacsymb);
+		colorPLOT(pacptr->ypos, pacptr->xpos, pacsymb, pacptr->col);
 	};
 }
 
-
+

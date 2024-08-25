@@ -4,7 +4,7 @@
 startmonst()
 {
 	struct pactyp *mptr;
-	register int monstnum;
+	register int monstcnt;
 
 	if (potion == TRUE)
 	{
@@ -12,11 +12,12 @@ startmonst()
 		return;
 	};
 
-	for (mptr = &monst[0], monstnum = 0; monstnum < MAXMONSTER; mptr++, monstnum++)
+	for (monstcnt = 0; monstcnt < MAXMONSTER; monstcnt++)
 	{
+		mptr = (&monst[monstcnt]);
 		if (mptr->stat == START)
 		{
-			rscore[monstnum] = 1;
+			rscore[monstcnt] = 1;
 
 			/* clear home */
 			PLOT(mptr->ypos, mptr->xpos, VACANT);
@@ -27,7 +28,7 @@ startmonst()
 			mptr->speed = SLOW;
 			mptr->danger = TRUE;
 			mptr->stat = RUN;
-			PLOT(MBEGINY, MBEGINX, MONSTER);
+			colorPLOT(mptr->ypos, mptr->xpos, MONSTER, mptr->col);
 
 			/* DRIGHT or DLEFT? */
 			mptr->dirn = getrand(2) + DLEFT;
@@ -39,7 +40,7 @@ startmonst()
 monster(mnum)
 int mnum;
 {
-	register int newx,newy;
+	register int newx, newy;
 	register int tmpx, tmpy;
 	struct pactyp *mptr;
 	int gmod2;
@@ -81,14 +82,14 @@ int mnum;
 			newx = tmpx + LEFTINT;
 			newy = tmpy;
 			if (newx <= 0)
-				newx = XWRAP;	/* wrap around */
+				newx = XWRAP;  /* wrap around */
 			break;
 
 		case DRIGHT:
 			newx = tmpx + RIGHTINT;
 			newy = tmpy;
 			if (newx >= XWRAP)
-				newx = 0;	/* wrap around */
+				newx = 0;  /* wrap around */
 			break;
 		}
 
@@ -117,11 +118,11 @@ int mnum;
 			{
 				if (mptr->danger == TRUE)
 				{
-					PLOT(newy, newx, MONSTER);
+					colorPLOT(mptr->ypos, mptr->xpos, MONSTER, mptr->col);
 				}
 				else if (killflg != GOTONE)
 				{
-					PLOT(newy, newx, RUNNER);
+					colorPLOT(mptr->ypos, mptr->xpos, RUNNER, col_gray);
 				};
 			};
 			break;
@@ -295,4 +296,4 @@ int x, y;
 	return(moves[getrand(movecnt)]);
 }
 
-
+
