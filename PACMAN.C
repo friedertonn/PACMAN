@@ -37,7 +37,6 @@ main()
 	register int monstcnt;  /* monster number */
 	struct pactyp *mptr;
 
-	bios(4, 134);  /* CONOUT 0x86 --> intensiv */
 	init();  /* global init */
 	for (pac_cnt = MAXPAC; pac_cnt > 0; pac_cnt--)
 	{
@@ -342,4 +341,4 @@ pacman()
 	};
 }
 
-
+
